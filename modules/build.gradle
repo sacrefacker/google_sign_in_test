@@ -1,0 +1,48 @@
+buildscript {
+    ext.KOTLIN_VERSION = '1.2.30'
+
+    repositories {
+        jcenter()
+
+        maven {
+            url 'https://maven.fabric.io/public'
+        }
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:2.3.3'
+        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
+        classpath 'me.tatarka:gradle-retrolambda:3.7.0'
+        classpath 'com.google.gms:google-services:3.2.0'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$KOTLIN_VERSION"
+
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+
+allprojects {
+    repositories {
+        jcenter()
+        maven { url "https://maven.google.com" }
+        flatDir { dirs 'libs' }
+    }
+}
+
+// Controlling Android properties of all your modules from the main project
+// @link http://tools.android.com/tech-docs/new-build-system/tips
+ext {
+    compileSdkVersion = 27
+    buildToolsVersion = '27.0.3'
+    minSdkVersion = 16
+    targetSdkVersion = 27
+
+    ANDROID_SUPPORT_VERSION = '27.1.0'
+    FIREBASE_SERVICES_VERSION = '12.0.0'
+    GOOGLE_PLAY_SERVICES_VERSION = '12.0.0'
+    JUNIT_VERSION = '4.12'
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}

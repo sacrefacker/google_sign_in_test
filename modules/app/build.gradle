@@ -1,0 +1,102 @@
+apply plugin: 'com.android.application'
+apply plugin: 'com.neenbedankt.android-apt'
+apply plugin: 'kotlin-android'
+apply plugin: 'me.tatarka.retrolambda'
+apply plugin: 'kotlin-android-extensions'
+
+android {
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
+
+    lintOptions {
+        abortOnError false
+    }
+
+    defaultConfig {
+        applicationId "com.ekassir.maloshtanas.googlesignintest"
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        multiDexEnabled true
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    signingConfigs {
+        release {
+            try {
+                storeFile file('../../keystore/com.ekassir.maloshtanas.googlesignintest.jks')
+                storePassword 111111
+                keyAlias 'com.ekassir.maloshtanas.googlesignintest'
+                keyPassword 111111
+            }
+            catch (ignored) {
+                System.err.println('You should define KEYSTORE_PASSWORD and KEY_PASSWORD in gradle.properties.')
+            }
+        }
+    }
+
+    buildTypes {
+        debug {
+            // Do nothing
+        }
+
+        debugNoMapsJni {
+            initWith debug
+        }
+
+        debugLeakCanary {
+            initWith debug
+        }
+
+        release {
+            signingConfig signingConfigs.release
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+
+            // Comment this part out in case of weird build errors. No idea how they can look like.
+            // Derived from https://stackoverflow.com/questions/18332474/how-to-set-versionname-in-apk-filename-using-gradle
+            applicationVariants.all { variant ->
+                variant.outputs.each { output ->
+                    def newName = defaultConfig.applicationId + "-" + defaultConfig.versionName + ".apk"
+
+                    //noinspection GroovyAssignabilityCheck
+                    output.outputFile = new File(output.outputFile.parent, newName)
+                }
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$KOTLIN_VERSION"
+
+    final ANDROID_SUPPORT_VERSION = rootProject.ext.ANDROID_SUPPORT_VERSION
+    compile "com.android.support:appcompat-v7:$ANDROID_SUPPORT_VERSION"
+    compile "com.android.support:design:$ANDROID_SUPPORT_VERSION"
+
+    final FIREBASE_SERVICES_VERSION = rootProject.ext.FIREBASE_SERVICES_VERSION
+    compile "com.google.firebase:firebase-core:$FIREBASE_SERVICES_VERSION"
+
+    final GOOGLE_PLAY_SERVICES_VERSION = rootProject.ext.GOOGLE_PLAY_SERVICES_VERSION
+    compile "com.google.android.gms:play-services-auth:$GOOGLE_PLAY_SERVICES_VERSION"
+
+    final JUNIT_VERSION = rootProject.ext.JUNIT_VERSION
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    testCompile "junit:junit:$JUNIT_VERSION"
+}
+
+apply plugin: 'com.google.gms.google-services'
